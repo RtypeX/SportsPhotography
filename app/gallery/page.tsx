@@ -34,7 +34,6 @@ export default async function GalleryPage() {
               </a>
             </div>
             <GalleryActions
-              downloadHref={`/api/collections/${collection.slug}/download`}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} at ${collection.eventName}`}
             />

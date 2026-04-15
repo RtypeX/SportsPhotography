@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 
 type GalleryActionsProps = {
-  downloadHref: string;
+  downloadHref?: string;
   shareUrl?: string;
   shareTitle: string;
   shareText: string;
@@ -69,12 +69,14 @@ export function GalleryActions({
 
   return (
     <div className="gallery-actions">
-      <Button asChild className="gallery-actions__primary" size="lg">
-        <a href={downloadHref}>
-          <DownloadIcon data-icon="inline-start" />
-          Download All Photos
-        </a>
-      </Button>
+      {downloadHref ? (
+        <Button asChild className="gallery-actions__primary" size="lg">
+          <a href={downloadHref}>
+            <DownloadIcon data-icon="inline-start" />
+            Download All Photos
+          </a>
+        </Button>
+      ) : null}
       <Button type="button" onClick={handleShare} disabled={isPending} variant="outline" size="lg" className="gallery-actions__button">
         {isPending ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <Share2Icon data-icon="inline-start" />}
         Share Gallery

@@ -61,7 +61,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               </a>
             </div>
             <GalleryActions
-              downloadHref={`/api/collections/${collection.slug}/download`}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} gallery by Dustin`}
             />

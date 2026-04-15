@@ -1,1 +1,139 @@
 ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+⨯ ./lib/site-content.ts:7:1
+Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+⨯ ./lib/site-content.ts:7:1
+Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: Module not found: Can't resolve '@/lib/generated/photo-manifest.json'
+   5 |   getCollectionDefinition,
+   6 | } from "@/lib/site-data";
+>  7 | import photoManifest from "@/lib/generated/photo-manifest.json";
+     | ^
+   8 |
+   9 | export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig...
+  10 |
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.tsx
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Image with src "/collections/shook-2026/_DSC0046.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading

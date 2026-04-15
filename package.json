@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "dev:turbopack": "next dev",
-    "build": "next build",
+    "prepare:galleries": "node scripts/prepare-gallery-assets.mjs",
+    "dev": "npm run prepare:galleries && next dev --webpack",
+    "dev:turbopack": "npm run prepare:galleries && next dev",
+    "build": "npm run prepare:galleries && next build",
     "start": "next start",
     "lint": "eslint"
   },

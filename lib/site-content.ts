@@ -1,14 +1,10 @@
 import { cache } from "react";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-
-import { imageSizeFromFile } from "image-size/fromFile";
 import { createClient } from "@supabase/supabase-js";
 import {
   defaultCollectionSlug,
   getCollectionDefinition,
-  type CollectionDefinition,
 } from "@/lib/site-data";
+import photoManifest from "@/lib/generated/photo-manifest.json";
 
 export { collectionDefinitions, defaultCollectionSlug, getCollectionDefinition, siteConfig } from "@/lib/site-data";
 
@@ -41,15 +37,21 @@ type PhotoOverride = {
   sort_order: number | null;
 };
 
-const imagesRoot = path.join(process.cwd(), "images");
 const fileCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-
-function getCollectionDirectory(collection: CollectionDefinition) {
-  return path.join(imagesRoot, collection.sourceFolder);
-}
+const localPhotoManifest = photoManifest as Record<
+  string,
+  Array<{
+    filename: string;
+    width: number;
+    height: number;
+    orientation: PhotoOrientation;
+    featured: boolean;
+    sortOrder: number;
+  }>
+>;
 
 export function getPhotoSrc(collectionSlug: string, filename: string) {
-  return `/api/collections/${collectionSlug}/photo/${encodeURIComponent(filename)}`;
+  return `/collections/${collectionSlug}/${encodeURIComponent(filename)}`;
 }
 
 export function getCoverImage(collectionSlug = defaultCollectionSlug) {
@@ -94,34 +96,20 @@ const getPhotoOverrides = cache(async (collectionSlug: string) => {
 
 const getLocalPhotos = cache(async (collectionSlug: string) => {
   const collection = getCollectionDefinition(collectionSlug);
-  const directory = getCollectionDirectory(collection);
-  const files = await fs.readdir(directory);
+  const manifestEntries = localPhotoManifest[collection.sourceFolder] ?? [];
 
-  return Promise.all(
-    files
-      .filter((file) => /\.(jpe?g|png|webp)$/i.test(file))
-      .sort((left, right) => fileCollator.compare(left, right))
-      .map(async (filename, index) => {
-        const absolutePath = path.join(directory, filename);
-        const dimensions = await imageSizeFromFile(absolutePath);
-        const width = dimensions.width ?? 1200;
-        const height = dimensions.height ?? 1600;
-        const orientation: PhotoOrientation = width >= height ? "landscape" : "portrait";
-
-        return {
-          id: `${collection.slug}-${filename}`,
-          filename,
-          src: getPhotoSrc(collection.slug, filename),
-          width,
-          height,
-          orientation,
-          defaultTitle: collection.teamName,
-          defaultCaption: `${collection.teamName} at ${collection.eventName}`,
-          featured: index < 12,
-          sortOrder: index,
-        };
-      }),
-  );
+  return manifestEntries.map((photo) => ({
+    id: `${collection.slug}-${photo.filename}`,
+    filename: photo.filename,
+    src: getPhotoSrc(collection.slug, photo.filename),
+    width: photo.width,
+    height: photo.height,
+    orientation: photo.orientation,
+    defaultTitle: collection.teamName,
+    defaultCaption: `${collection.teamName} at ${collection.eventName}`,
+    featured: photo.featured,
+    sortOrder: photo.sortOrder,
+  }));
 });
 
 export const getCollectionPhotos = cache(async (collectionSlug = defaultCollectionSlug): Promise<PhotoEntry[]> => {
