@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 
 import { SiteMotion } from "@/components/site-motion";
+import { siteConfig } from "@/lib/site-data";
 
 import "./globals.css";
 
@@ -16,8 +17,24 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "SHOOKTOURN. DUSTINSSHOTS",
+  title: {
+    default: `${siteConfig.shortName} | Sports Photography`,
+    template: `%s | ${siteConfig.shortName}`,
+  },
   description: "Sports photography by Dustin Lapuz featuring cinematic event galleries, full-size viewing, and clean mobile-friendly browsing.",
+  applicationName: siteConfig.siteName,
+  openGraph: {
+    title: `${siteConfig.shortName} | Sports Photography`,
+    description:
+      "Sports photography by Dustin Lapuz featuring cinematic event galleries, full-size viewing, and clean mobile-friendly browsing.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.shortName} | Sports Photography`,
+    description:
+      "Sports photography by Dustin Lapuz featuring cinematic event galleries, full-size viewing, and clean mobile-friendly browsing.",
+  },
 };
 
 export default function RootLayout({

@@ -7,9 +7,10 @@ import type { PhotoEntry } from "@/lib/site-content";
 
 type PortfolioSceneProps = {
   photo: PhotoEntry;
+  titleOverride?: string;
 };
 
-export function PortfolioScene({ photo }: PortfolioSceneProps) {
+export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
   const [style, setStyle] = useState<CSSProperties>({
     "--pointer-x": "50%",
     "--pointer-y": "50%",
@@ -79,16 +80,16 @@ export function PortfolioScene({ photo }: PortfolioSceneProps) {
             quality={100}
             unoptimized
           />
-        </div>
-
-        <div className="portfolio-scene__footer">
-          <div>
-            <p className="photo-meta">{photo.sport}</p>
-            <p className="hero-caption__title">{photo.title}</p>
+          <div className="portfolio-scene__media-fade" aria-hidden="true" />
+          <div className="portfolio-scene__footer">
+            <div>
+              <p className="photo-meta">{photo.sport}</p>
+              <p className="hero-caption__title">{titleOverride ?? photo.title}</p>
+            </div>
+            <p>
+              {photo.event} · {photo.date}
+            </p>
           </div>
-          <p>
-            {photo.event} · {photo.date}
-          </p>
         </div>
       </div>
 

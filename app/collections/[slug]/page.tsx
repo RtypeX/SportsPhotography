@@ -1,18 +1,39 @@
-import { headers } from "next/headers";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { CollectionSwitcher } from "@/components/collection-switcher";
 import { GalleryActions } from "@/components/gallery-actions";
 import { PhotoGrid } from "@/components/photo-grid";
 import { ReelMarquee } from "@/components/reel-marquee";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SiteHeader } from "@/components/site-header";
-import { getCollectionDefinition, getCollectionPhotos } from "@/lib/site-content";
+import {
+  collectionDefinitions,
+  getCollectionDefinition,
+  getCollectionPhotos,
+} from "@/lib/site-content";
+import { buildCollectionMetadata } from "@/lib/metadata";
 
 type CollectionPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+export function generateStaticParams() {
+  return collectionDefinitions.map((collection) => ({ slug: collection.slug }));
+}
+
+export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const collection = getCollectionDefinition(slug);
+
+  if (collection.slug !== slug) {
+    return {};
+  }
+
+  return buildCollectionMetadata(collection);
+}
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
@@ -23,10 +44,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   }
 
   const photos = await getCollectionPhotos(collection.slug);
-  const headerStore = await headers();
-  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host") ?? "localhost:3000";
-  const protocol = headerStore.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
-  const shareUrl = `${protocol}://${host}/collections/${collection.slug}`;
   const photoCount = new Intl.NumberFormat("en-US").format(photos.length);
 
   return (
@@ -45,7 +62,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             </div>
             <GalleryActions
               downloadHref={`/api/collections/${collection.slug}/download`}
-              shareUrl={shareUrl}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} gallery by Dustin`}
             />
@@ -57,6 +73,10 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         </ScrollReveal>
 
         <ScrollReveal delay={180}>
+          <CollectionSwitcher currentSlug={collection.slug} />
+        </ScrollReveal>
+
+        <ScrollReveal delay={220}>
           <section className="gallery-section section-panel">
             <PhotoGrid photos={photos} collection />
           </section>

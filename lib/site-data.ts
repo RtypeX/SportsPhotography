@@ -24,7 +24,7 @@ export const collectionDefinitions: CollectionDefinition[] = [
   {
     slug: "shook-2026",
     sourceFolder: "shook 2026",
-    collectionName: "SHOOKTOURN. DUSTINSSHOTS",
+    collectionName: "SHOOK TOURNMENTS. DUSTINSSHOTS",
     businessName: "DUSTINSHOTSS",
     businessHandle: "dustinshotss",
     siteName: "Dustin Lapuz",
@@ -49,7 +49,7 @@ export const collectionDefinitions: CollectionDefinition[] = [
     sourceFolder: "haa'heo 12u",
     collectionName: "HAA'HEO 12U. DUSTINSSHOTS",
     businessName: "DUSTINSHOTSS",
-    businessHandle: "dustinshhots",
+    businessHandle: "dustinsshots",
     siteName: "Dustin Lapuz",
     shortName: "Dustin Lapuz",
     eyebrow: "Flag Football Collection",

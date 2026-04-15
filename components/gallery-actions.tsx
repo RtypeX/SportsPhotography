@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 type GalleryActionsProps = {
   downloadHref: string;
-  shareUrl: string;
+  shareUrl?: string;
   shareTitle: string;
   shareText: string;
 };
@@ -47,17 +47,19 @@ export function GalleryActions({
   const handleShare = () => {
     startTransition(async () => {
       try {
+        const resolvedShareUrl = shareUrl ?? window.location.href;
+
         if (navigator.share) {
           await navigator.share({
             title: shareTitle,
             text: shareText,
-            url: shareUrl,
+            url: resolvedShareUrl,
           });
           showStatus("Shared");
           return;
         }
 
-        await navigator.clipboard.writeText(shareUrl);
+        await navigator.clipboard.writeText(resolvedShareUrl);
         showStatus("Link copied");
       } catch {
         showStatus("Share cancelled");
