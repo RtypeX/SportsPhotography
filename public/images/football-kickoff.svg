@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Football kickoff placeholder artwork</title>
+  <desc id="desc">Abstract sports artwork with warm stadium lighting and football field markings.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#c3b299"/>
+      <stop offset="48%" stop-color="#78624d"/>
+      <stop offset="100%" stop-color="#1f2732"/>
+    </linearGradient>
+    <radialGradient id="lights" cx="0.2" cy="0.12" r="0.9">
+      <stop offset="0%" stop-color="#f9f1da" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#f9f1da" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#bg)"/>
+  <rect y="760" width="1600" height="340" fill="#334c3f"/>
+  <rect y="800" width="1600" height="300" fill="#294136"/>
+  <circle cx="320" cy="160" r="430" fill="url(#lights)"/>
+  <circle cx="1200" cy="220" r="280" fill="#d9c4a0" fill-opacity="0.18"/>
+  <path d="M0 820h1600" stroke="#f4ece0" stroke-opacity="0.4" stroke-width="8"/>
+  <path d="M180 760v340M450 760v340M720 760v340M990 760v340M1260 760v340" stroke="#f4ece0" stroke-opacity="0.17" stroke-width="6"/>
+  <path d="M330 735c95-104 205-126 320-110 93 12 151 71 231 106 88 39 201 42 380-48" fill="none" stroke="#e8dcc6" stroke-opacity="0.38" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="540" cy="640" r="56" fill="#131a22"/>
+  <path d="M520 690l-46 126 47 46M560 692l78 154M490 760h132" fill="none" stroke="#161c24" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="908" cy="626" r="50" fill="#161c24"/>
+  <path d="M888 678l-52 138 41 46M930 678l88 166M860 756h134" fill="none" stroke="#171d25" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

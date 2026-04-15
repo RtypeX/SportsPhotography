@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Baseball dugout placeholder artwork</title>
+  <desc id="desc">Abstract baseball scene with dugout shadows, warm sunlight, and players waiting.</desc>
+  <defs>
+    <linearGradient id="field" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e7e1d3"/>
+      <stop offset="45%" stop-color="#b8a273"/>
+      <stop offset="100%" stop-color="#304032"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1100" fill="url(#field)"/>
+  <rect y="730" width="1600" height="370" fill="#4c6646"/>
+  <rect x="0" y="362" width="610" height="500" fill="#221d1a" fill-opacity="0.4"/>
+  <circle cx="1260" cy="210" r="230" fill="#fbf5e4" fill-opacity="0.54"/>
+  <path d="M744 786c32-78 94-148 176-196 80 50 142 120 176 196" fill="none" stroke="#f8f2e8" stroke-opacity="0.4" stroke-width="10"/>
+  <path d="M830 568c118 14 218 22 344-20" fill="none" stroke="#f2ebde" stroke-opacity="0.28" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="410" cy="612" r="48" fill="#181513"/>
+  <path d="M410 664l-8 132M406 720l-90 126M414 720l92 126M370 796l-58 188M450 796l60 188" fill="none" stroke="#181513" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="544" cy="628" r="48" fill="#181513"/>
+  <path d="M544 680l4 124M540 724l-84 112M550 726l88 118M510 804l-44 176M586 804l44 176" fill="none" stroke="#181513" stroke-width="28" stroke-linecap="round"/>
+</svg>
