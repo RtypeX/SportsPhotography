@@ -2,13 +2,20 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DownloadIcon,
   ExternalLinkIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  type CSSProperties,
+  useDeferredValue,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 
 import type { PhotoEntry } from "@/lib/site-content";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -56,8 +63,10 @@ function matchesFilter(photo: PhotoEntry, filter: PhotoFilter) {
 export function PhotoGrid({ photos, compact = false, collection = false, showGalleryCta = true }: PhotoGridProps) {
   const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<PhotoFilter>("all");
+  const [isFilterPending, startFilterTransition] = useTransition();
   const canFilter = collection && photos.length > 12;
-  const visiblePhotos = canFilter ? photos.filter((photo) => matchesFilter(photo, activeFilter)) : photos;
+  const deferredFilter = useDeferredValue(activeFilter);
+  const visiblePhotos = canFilter ? photos.filter((photo) => matchesFilter(photo, deferredFilter)) : photos;
   const activeIndex = activePhotoId
     ? visiblePhotos.findIndex((photo) => photo.id === activePhotoId)
     : -1;
@@ -67,6 +76,25 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
     : compact
       ? "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 33vw"
       : "(max-width: 980px) 100vw, 50vw";
+  const closeLightbox = () => {
+    setActivePhotoId(null);
+  };
+  const openPreviousPhoto = () => {
+    if (visiblePhotos.length === 0) {
+      return;
+    }
+
+    const nextIndex = (activeIndex - 1 + visiblePhotos.length) % visiblePhotos.length;
+    setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
+  };
+  const openNextPhoto = () => {
+    if (visiblePhotos.length === 0) {
+      return;
+    }
+
+    const nextIndex = (activeIndex + 1) % visiblePhotos.length;
+    setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
+  };
 
   useEffect(() => {
     if (activePhoto === null) {
@@ -75,17 +103,15 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setActivePhotoId(null);
+        closeLightbox();
       }
 
-      if (event.key === "ArrowRight" && visiblePhotos.length > 0) {
-        const nextIndex = (activeIndex + 1) % visiblePhotos.length;
-        setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
+      if (event.key === "ArrowRight") {
+        openNextPhoto();
       }
 
-      if (event.key === "ArrowLeft" && visiblePhotos.length > 0) {
-        const nextIndex = (activeIndex - 1 + visiblePhotos.length) % visiblePhotos.length;
-        setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
+      if (event.key === "ArrowLeft") {
+        openPreviousPhoto();
       }
     };
 
@@ -109,17 +135,20 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
               key={option.value}
               type="button"
               className={`filter-chip${activeFilter === option.value ? " filter-chip--active" : ""}`}
-              onClick={() => {
-                if (
-                  activePhotoId &&
-                  !photos.some((photo) => photo.id === activePhotoId && matchesFilter(photo, option.value))
-                ) {
-                  setActivePhotoId(null);
-                }
+              onClick={() =>
+                startFilterTransition(() => {
+                  if (
+                    activePhotoId &&
+                    !photos.some((photo) => photo.id === activePhotoId && matchesFilter(photo, option.value))
+                  ) {
+                    setActivePhotoId(null);
+                  }
 
-                setActiveFilter(option.value);
-              }}
+                  setActiveFilter(option.value);
+                })
+              }
               aria-pressed={activeFilter === option.value}
+              disabled={isFilterPending && activeFilter !== option.value}
             >
               {option.label}
             </button>
@@ -137,7 +166,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
             as="article"
             className="photo-card"
           >
-            <div style={{ "--card-index": index } as React.CSSProperties}>
+            <div style={{ "--card-index": index } as CSSProperties}>
               <button
                 type="button"
                 className="photo-button"
@@ -152,8 +181,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     height={photo.height}
                     sizes={photoSizes}
                     className="photo-image"
-                    quality={100}
-                    unoptimized
+                    quality={90}
                   />
                   <span className="photo-overlay">Open full size</span>
                 </div>
@@ -172,7 +200,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
         {!compact && showGalleryCta ? (
           <ScrollReveal delay={220} as="div" className="gallery-cta">
             <p>Need the full archive?</p>
-            <a href="/gallery">Browse the complete gallery</a>
+            <Link href="/gallery">Browse the complete gallery</Link>
           </ScrollReveal>
         ) : null}
       </div>
@@ -198,7 +226,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                   type="button"
                   variant="ghost"
                   className="lightbox__close"
-                  onClick={() => setActivePhotoId(null)}
+                  onClick={closeLightbox}
                   aria-label="Close image preview"
                 >
                   Close
@@ -213,8 +241,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     className="lightbox__image"
                     sizes="100vw"
                     priority
-                    quality={100}
-                    unoptimized
+                    quality={95}
                   />
                 </div>
 
@@ -228,10 +255,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => {
-                        const nextIndex = (activeIndex - 1 + visiblePhotos.length) % visiblePhotos.length;
-                        setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
-                      }}
+                      onClick={openPreviousPhoto}
                     >
                       <ChevronLeftIcon data-icon="inline-start" />
                       Previous
@@ -239,10 +263,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => {
-                        const nextIndex = (activeIndex + 1) % visiblePhotos.length;
-                        setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
-                      }}
+                      onClick={openNextPhoto}
                     >
                       Next
                       <ChevronRightIcon data-icon="inline-end" />

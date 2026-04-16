@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   collectionDefinitions,
   defaultCollectionSlug,
@@ -12,7 +12,6 @@ type CollectionSwitcherProps = {
 };
 
 export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
-  const router = useRouter();
   const primaryCollection = getCollectionDefinition(defaultCollectionSlug);
   const alternateCollections = collectionDefinitions.filter(
     (collection) => collection.slug !== currentSlug,
@@ -31,11 +30,7 @@ export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
 
       <div className="showcase-grid">
         {currentSlug !== primaryCollection.slug ? (
-          <button
-            type="button"
-            className="showcase-card"
-            onClick={() => router.push("/gallery")}
-          >
+          <Link href="/gallery" className="showcase-card">
             <div>
               <span className="showcase-card__eyebrow">{primaryCollection.eventDate}</span>
               <h3>{primaryCollection.teamName}</h3>
@@ -44,18 +39,17 @@ export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
             <p className="photo-meta">
               {primaryCollection.sport} · current gallery
             </p>
-          </button>
+          </Link>
         ) : null}
 
         {alternateCollections.map((collection) => (
-          <button
+          <Link
             key={collection.slug}
-            type="button"
             className="showcase-card"
-            onClick={() =>
-              router.push(
-                collection.slug === defaultCollectionSlug ? "/gallery" : `/collections/${collection.slug}`,
-              )
+            href={
+              collection.slug === defaultCollectionSlug
+                ? "/gallery"
+                : `/collections/${collection.slug}`
             }
           >
             <div>
@@ -66,7 +60,7 @@ export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
             <p className="photo-meta">
               {collection.sport} · {collection.eventName}
             </p>
-          </button>
+          </Link>
         ))}
       </div>
     </section>

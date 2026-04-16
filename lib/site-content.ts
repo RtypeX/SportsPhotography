@@ -127,7 +127,7 @@ export const getCollectionPhotos = cache(async (collectionSlug = defaultCollecti
         id: photo.id,
         filename: photo.filename,
         src: photo.src,
-        alt: `${collection.teamName} flag football action photo ${photo.filename}`,
+        alt: `${collection.teamName} during ${collection.eventName}. ${override?.caption?.trim() || photo.defaultCaption}`,
         title: override?.title?.trim() || photo.defaultTitle,
         caption: override?.caption?.trim() || photo.defaultCaption,
         sport: collection.sport,

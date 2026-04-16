@@ -19,14 +19,14 @@ export function SiteHeader() {
     ? [
         { label: "Gallery", href: "/gallery", active: false },
         { label: "Highlights", href: "/#featured", active: false },
-        { label: "Contact", href: "/#contact", active: false },
+        { label: "Book", href: "/#booking", active: false },
       ]
     : [
         { label: "Home", href: "/", active: false },
         { label: "Gallery", href: "/gallery", active: pathname === "/gallery" },
         {
           label: "Book",
-          href: `mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`,
+          href: "/#booking",
           active: false,
         },
       ];

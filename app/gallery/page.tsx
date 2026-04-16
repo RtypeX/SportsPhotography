@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { CollectionSwitcher } from "@/components/collection-switcher";
 import { GalleryActions } from "@/components/gallery-actions";
@@ -8,6 +9,7 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 import { SiteHeader } from "@/components/site-header";
 import { defaultCollectionSlug, getCollectionDefinition, getCollectionPhotos } from "@/lib/site-content";
 import { buildCollectionMetadata } from "@/lib/metadata";
+import { siteConfig } from "@/lib/site-data";
 
 const collection = getCollectionDefinition(defaultCollectionSlug);
 
@@ -32,8 +34,10 @@ export default async function GalleryPage() {
               <a href={collection.instagramUrl} target="_blank" rel="noopener noreferrer">
                 DM Dustin
               </a>
+              <Link href="/#booking">Book coverage</Link>
             </div>
             <GalleryActions
+              downloadHref={`/api/collections/${collection.slug}/download`}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} at ${collection.eventName}`}
             />
@@ -51,6 +55,22 @@ export default async function GalleryPage() {
         <ScrollReveal delay={220}>
           <section className="gallery-section section-panel">
             <PhotoGrid photos={photos} collection />
+          </section>
+        </ScrollReveal>
+
+        <ScrollReveal delay={260}>
+          <section className="contact-band section-panel">
+            <p className="section-label">Need your own gallery?</p>
+            <h2>{collection.startingPrice} coverage built for teams that want fast delivery and clean sharing.</h2>
+            <p>
+              {collection.turnaround} {siteConfig.bookingResponseWindow}
+            </p>
+            <div className="contact-band__actions">
+              <Link href="/#booking">Send booking request</Link>
+              <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
+                Email Dustin
+              </a>
+            </div>
           </section>
         </ScrollReveal>
       </main>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CollectionSwitcher } from "@/components/collection-switcher";
@@ -13,6 +14,7 @@ import {
   getCollectionPhotos,
 } from "@/lib/site-content";
 import { buildCollectionMetadata } from "@/lib/metadata";
+import { siteConfig } from "@/lib/site-data";
 
 type CollectionPageProps = {
   params: Promise<{
@@ -59,8 +61,10 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               <a href={collection.instagramUrl} target="_blank" rel="noopener noreferrer">
                 DM Dustin
               </a>
+              <Link href="/#booking">Book coverage</Link>
             </div>
             <GalleryActions
+              downloadHref={`/api/collections/${collection.slug}/download`}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} gallery by Dustin`}
             />
@@ -78,6 +82,22 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         <ScrollReveal delay={220}>
           <section className="gallery-section section-panel">
             <PhotoGrid photos={photos} collection />
+          </section>
+        </ScrollReveal>
+
+        <ScrollReveal delay={260}>
+          <section className="contact-band section-panel">
+            <p className="section-label">Coverage</p>
+            <h2>{collection.startingPrice} coverage with galleries that stay easy to browse on phones.</h2>
+            <p>
+              {collection.turnaround} {siteConfig.bookingResponseWindow}
+            </p>
+            <div className="contact-band__actions">
+              <Link href="/#booking">Send booking request</Link>
+              <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
+                Email Dustin
+              </a>
+            </div>
           </section>
         </ScrollReveal>
       </main>

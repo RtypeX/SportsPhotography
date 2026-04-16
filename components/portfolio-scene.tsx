@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 
 import type { PhotoEntry } from "@/lib/site-content";
 
@@ -11,31 +11,29 @@ type PortfolioSceneProps = {
 };
 
 export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
-  const [style, setStyle] = useState<CSSProperties>({
-    "--pointer-x": "50%",
-    "--pointer-y": "50%",
-  } as CSSProperties);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div
+      ref={sceneRef}
       className="portfolio-scene"
-      style={style}
+      style={{ "--pointer-x": "50%", "--pointer-y": "50%" } as CSSProperties}
       onMouseMove={(event) => {
+        if (!sceneRef.current) {
+          return;
+        }
+
         const bounds = event.currentTarget.getBoundingClientRect();
         const x = ((event.clientX - bounds.left) / bounds.width) * 100;
         const y = ((event.clientY - bounds.top) / bounds.height) * 100;
 
-        setStyle({
-          "--pointer-x": `${x}%`,
-          "--pointer-y": `${y}%`,
-        } as CSSProperties);
+        sceneRef.current.style.setProperty("--pointer-x", `${x}%`);
+        sceneRef.current.style.setProperty("--pointer-y", `${y}%`);
       }}
-      onMouseLeave={() =>
-        setStyle({
-          "--pointer-x": "50%",
-          "--pointer-y": "50%",
-        } as CSSProperties)
-      }
+      onMouseLeave={() => {
+        sceneRef.current?.style.setProperty("--pointer-x", "50%");
+        sceneRef.current?.style.setProperty("--pointer-y", "50%");
+      }}
     >
       <Image
         src="/assets/track-lines.svg"
@@ -77,8 +75,7 @@ export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
             className="portfolio-scene__image"
             priority
             sizes="(max-width: 900px) 100vw, 58vw"
-            quality={100}
-            unoptimized
+            quality={92}
           />
           <div className="portfolio-scene__media-fade" aria-hidden="true" />
           <div className="portfolio-scene__footer">

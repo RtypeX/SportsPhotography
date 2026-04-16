@@ -5,39 +5,38 @@ import { type CSSProperties, useEffect, useRef } from "react";
 export function SiteMotion() {
   const progressRef = useRef<HTMLSpanElement | null>(null);
   const cursorRef = useRef<HTMLSpanElement | null>(null);
+  const progressFrameRef = useRef(0);
+  const cursorFrameRef = useRef(0);
+  const nextCursorXRef = useRef(50);
+  const nextCursorYRef = useRef(24);
 
   useEffect(() => {
-    let progressFrame = 0;
-    let cursorFrame = 0;
-    let nextCursorX = 50;
-    let nextCursorY = 24;
-
     const updateProgress = () => {
-      if (progressFrame) {
+      if (progressFrameRef.current) {
         return;
       }
 
-      progressFrame = window.requestAnimationFrame(() => {
+      progressFrameRef.current = window.requestAnimationFrame(() => {
         const root = document.documentElement;
         const scrollable = root.scrollHeight - window.innerHeight;
         const next = scrollable <= 0 ? 0 : window.scrollY / scrollable;
         progressRef.current?.style.setProperty("transform", `scaleX(${Math.min(1, Math.max(0, next))})`);
-        progressFrame = 0;
+        progressFrameRef.current = 0;
       });
     };
 
     const updateCursor = (event: PointerEvent) => {
-      nextCursorX = (event.clientX / window.innerWidth) * 100;
-      nextCursorY = (event.clientY / window.innerHeight) * 100;
+      nextCursorXRef.current = (event.clientX / window.innerWidth) * 100;
+      nextCursorYRef.current = (event.clientY / window.innerHeight) * 100;
 
-      if (cursorFrame) {
+      if (cursorFrameRef.current) {
         return;
       }
 
-      cursorFrame = window.requestAnimationFrame(() => {
-        cursorRef.current?.style.setProperty("--cursor-x", `${nextCursorX}%`);
-        cursorRef.current?.style.setProperty("--cursor-y", `${nextCursorY}%`);
-        cursorFrame = 0;
+      cursorFrameRef.current = window.requestAnimationFrame(() => {
+        cursorRef.current?.style.setProperty("--cursor-x", `${nextCursorXRef.current}%`);
+        cursorRef.current?.style.setProperty("--cursor-y", `${nextCursorYRef.current}%`);
+        cursorFrameRef.current = 0;
       });
     };
 
@@ -51,11 +50,11 @@ export function SiteMotion() {
       window.removeEventListener("scroll", updateProgress);
       window.removeEventListener("resize", updateProgress);
       window.removeEventListener("pointermove", updateCursor);
-      if (progressFrame) {
-        window.cancelAnimationFrame(progressFrame);
+      if (progressFrameRef.current) {
+        window.cancelAnimationFrame(progressFrameRef.current);
       }
-      if (cursorFrame) {
-        window.cancelAnimationFrame(cursorFrame);
+      if (cursorFrameRef.current) {
+        window.cancelAnimationFrame(cursorFrameRef.current);
       }
     };
   }, []);

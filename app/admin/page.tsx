@@ -16,9 +16,14 @@ type AdminPageProps = {
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams;
-  const { user } = await requireAdminUser();
+  const { supabase, user } = await requireAdminUser();
   const selectedCollection = getCollectionDefinition(params.collection);
   const photos = await getCollectionPhotos(selectedCollection.slug);
+  const { data: bookingRequests } = await supabase
+    .from("booking_requests")
+    .select("id,contact_name,contact_email,team_name,event_date,coverage_type,message,created_at")
+    .order("created_at", { ascending: false })
+    .limit(8);
 
   return (
     <main className="admin-shell" id="main-content">
@@ -55,6 +60,35 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             {collection.teamName}
           </Link>
         ))}
+      </section>
+
+      <section className="admin-requests">
+        <div className="section-heading">
+          <p className="section-label">Recent booking requests</p>
+          <h2>New leads land here alongside the gallery tools.</h2>
+        </div>
+        <div className="admin-request-grid">
+          {bookingRequests?.length ? (
+            bookingRequests.map((request) => (
+              <article key={request.id} className="admin-request-card">
+                <div>
+                  <p className="photo-meta">{request.coverage_type}</p>
+                  <h3>{request.contact_name}</h3>
+                </div>
+                <p>{request.message}</p>
+                <div className="admin-request-card__meta">
+                  <span>{request.contact_email}</span>
+                  <span>{request.team_name || "No team listed"}</span>
+                  <span>{request.event_date || "Date not set"}</span>
+                </div>
+              </article>
+            ))
+          ) : (
+            <article className="admin-request-card admin-request-card--empty">
+              <p>No booking requests yet. New submissions from the homepage form will appear here.</p>
+            </article>
+          )}
+        </div>
       </section>
 
       <section className="admin-grid">

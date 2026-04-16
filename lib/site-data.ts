@@ -18,6 +18,9 @@ export type CollectionDefinition = {
   instagramUrl: string;
   emailAddress: string;
   coverFilename: string;
+  startingPrice: string;
+  turnaround: string;
+  coverageNotes: string[];
 };
 
 export const collectionDefinitions: CollectionDefinition[] = [
@@ -43,6 +46,13 @@ export const collectionDefinitions: CollectionDefinition[] = [
     instagramUrl: "https://www.instagram.com/dustinsshots/?__d=11%2F",
     emailAddress: "hello@dustinlapuz.com",
     coverFilename: "_DSC0043.jpg",
+    startingPrice: "$350",
+    turnaround: "Highlight selects within 48 hours, full gallery delivery in 3-5 days.",
+    coverageNotes: [
+      "Tournament coverage with sideline candids and action sequences.",
+      "Private gallery delivery with full-size downloads for families and teams.",
+      "Featured picks surfaced first so the best frames land quickly on mobile.",
+    ],
   },
   {
     slug: "haaheo-12u",
@@ -66,6 +76,13 @@ export const collectionDefinitions: CollectionDefinition[] = [
     instagramUrl: "https://www.instagram.com/dustinsshots/?__d=11%2F",
     emailAddress: "hello@dustinlapuz.com",
     coverFilename: "_DSC0142.jpg",
+    startingPrice: "$350",
+    turnaround: "Preview selects within 48 hours, polished gallery delivery in under a week.",
+    coverageNotes: [
+      "Game-day storytelling built for athletes, families, and coaches.",
+      "Shareable private gallery with fast browsing and clean downloads.",
+      "Best frames pinned up front so recap posts are easier to build.",
+    ],
   },
 ];
 
@@ -77,6 +94,9 @@ export const siteConfig = {
   eyebrow: "Sports Collections",
   instagramUrl: "https://www.instagram.com/dustinsshots/?__d=11%2F",
   emailAddress: "hello@dustinlapuz.com",
+  bookingDepositUrl: process.env.NEXT_PUBLIC_BOOKING_DEPOSIT_URL ?? "",
+  bookingDepositLabel: "Reserve coverage",
+  bookingResponseWindow: "Most booking requests get a reply within one business day.",
 };
 
 export function getCollectionDefinition(slug = defaultCollectionSlug) {

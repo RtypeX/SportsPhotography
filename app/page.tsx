@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
+import { BookingRequestForm } from "@/components/booking-request-form";
 import { PhotoGrid } from "@/components/photo-grid";
 import { PortfolioScene } from "@/components/portfolio-scene";
 import { ReelMarquee } from "@/components/reel-marquee";
@@ -33,6 +35,7 @@ export default async function Home() {
   const photoCount = new Intl.NumberFormat("en-US").format(collectionPhotos.length);
   const featuredCount = new Intl.NumberFormat("en-US").format(featuredPhotos.length);
   const bookingHref = `mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`;
+  const bookingDepositUrl = siteConfig.bookingDepositUrl || undefined;
   const reelItems = [
     primaryCollection.teamName,
     primaryCollection.eventName,
@@ -64,7 +67,7 @@ export default async function Home() {
             </time>
             <p className="collection-cover__lede">{primaryCollection.tagline}</p>
             <div className="hero-actions">
-              <a href="/gallery">Open full gallery</a>
+              <Link href="/gallery">Open full gallery</Link>
               <a href={primaryCollection.instagramUrl} target="_blank" rel="noopener noreferrer">
                 DM Dustin
               </a>
@@ -98,6 +101,11 @@ export default async function Home() {
                   <a href={primaryCollection.instagramUrl} target="_blank" rel="noopener noreferrer">
                     View Instagram
                   </a>
+                  {bookingDepositUrl ? (
+                    <a href={bookingDepositUrl} target="_blank" rel="noopener noreferrer">
+                      {siteConfig.bookingDepositLabel}
+                    </a>
+                  ) : null}
                 </div>
 
                 <div className="hero-points">
@@ -121,7 +129,7 @@ export default async function Home() {
 
             <ScrollReveal delay={210}>
               <div className="hero-stage">
-                <PortfolioScene photo={leadPhoto} titleOverride="shook tournments" />
+                <PortfolioScene photo={leadPhoto} titleOverride={primaryCollection.collectionName} />
               </div>
             </ScrollReveal>
           </section>
@@ -175,10 +183,10 @@ export default async function Home() {
                   proofing and download-ready delivery.
                 </p>
               </div>
-              <a href="/gallery">Open the full gallery</a>
+              <Link href="/gallery">Open the full gallery</Link>
             </div>
             <div className="showcase-grid">
-              <a href="/gallery" className="showcase-card showcase-card--wide">
+              <Link href="/gallery" className="showcase-card showcase-card--wide">
                 <div>
                   <span className="showcase-card__eyebrow">{primaryCollection.eventDate}</span>
                   <h3>{primaryCollection.teamName}</h3>
@@ -187,9 +195,9 @@ export default async function Home() {
                 <p className="photo-meta">
                   {primaryCollection.sport} · {photoCount} frames
                 </p>
-              </a>
+              </Link>
               {secondaryCollections.map((collection) => (
-                <a
+                <Link
                   key={collection.slug}
                   href={`/collections/${collection.slug}`}
                   className="showcase-card"
@@ -202,7 +210,7 @@ export default async function Home() {
                   <p className="photo-meta">
                     {collection.sport} · {collection.eventName}
                   </p>
-                </a>
+                </Link>
               ))}
             </div>
           </section>
@@ -224,15 +232,55 @@ export default async function Home() {
         </ScrollReveal>
 
         <ScrollReveal delay={280}>
+          <section className="booking-overview section-panel">
+            <div className="section-heading">
+              <p className="section-label">Coverage and delivery</p>
+              <h2>Cleaner packages, faster turnaround, and a booking flow that doesn&apos;t live in scattered DMs.</h2>
+            </div>
+            <div className="booking-offer-grid">
+              <article className="booking-offer-card">
+                <p className="photo-meta">Starting at</p>
+                <h3>{primaryCollection.startingPrice}</h3>
+                <p>{primaryCollection.turnaround}</p>
+              </article>
+              <article className="booking-offer-card">
+                <p className="photo-meta">What&apos;s included</p>
+                <div className="booking-offer-list">
+                  {primaryCollection.coverageNotes.map((note) => (
+                    <p key={note}>{note}</p>
+                  ))}
+                </div>
+              </article>
+            </div>
+          </section>
+        </ScrollReveal>
+
+        <ScrollReveal delay={300}>
+          <BookingRequestForm
+            collectionName={primaryCollection.collectionName}
+            collectionSlug={primaryCollection.slug}
+            bookingDepositLabel={siteConfig.bookingDepositLabel}
+            bookingDepositUrl={bookingDepositUrl}
+          />
+        </ScrollReveal>
+
+        <ScrollReveal delay={320}>
           <section className="contact-band section-panel" id="contact">
             <p className="section-label">Book coverage</p>
             <h2>Need tournament coverage, sideline portraits, or a gallery the whole team can use?</h2>
-            <p>{primaryCollection.availability}</p>
+            <p>
+              {primaryCollection.availability} {siteConfig.bookingResponseWindow}
+            </p>
             <div className="contact-band__actions">
               <a href={bookingHref}>Email Dustin</a>
               <a href={siteConfig.instagramUrl} target="_blank" rel="noopener noreferrer">
                 Message on Instagram
               </a>
+              {bookingDepositUrl ? (
+                <a href={bookingDepositUrl} target="_blank" rel="noopener noreferrer">
+                  {siteConfig.bookingDepositLabel}
+                </a>
+              ) : null}
             </div>
           </section>
         </ScrollReveal>
