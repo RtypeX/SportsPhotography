@@ -348,6 +348,14 @@ code {
 
 .site-nav__trigger {
   display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  position: relative;
+  cursor: pointer;
 }
 
 .site-nav__dropdown-trigger[data-slot="button"] {
@@ -418,8 +426,27 @@ code {
 }
 
 .site-nav__menu a {
+  display: grid;
+  gap: 0.2rem;
   padding: 0.65rem 0.8rem;
   border: 1px solid transparent;
+}
+
+.site-nav__menu a small,
+.site-nav__menu-label {
+  color: var(--text-soft);
+}
+
+.site-nav__menu-label {
+  padding: 0 0.8rem 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.site-nav__menu-link--active {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .site-nav__menu a:hover {
@@ -428,7 +455,8 @@ code {
 }
 
 .site-nav__dropdown:hover .site-nav__menu,
-.site-nav__dropdown:focus-within .site-nav__menu {
+.site-nav__dropdown:focus-within .site-nav__menu,
+.site-nav__menu--open {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -465,6 +493,12 @@ code {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.site-nav__trigger:hover,
+.site-nav__trigger:focus-visible {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .site-nav a::after {
   content: "";
   position: absolute;
@@ -479,8 +513,23 @@ code {
 }
 
 .site-nav a:hover::after,
-.site-nav a:focus-visible::after {
+.site-nav a:focus-visible::after,
+.site-nav__trigger:hover::after,
+.site-nav__trigger:focus-visible::after {
   transform: scaleX(1);
+}
+
+.site-nav__trigger::after {
+  content: "";
+  position: absolute;
+  left: 0.8rem;
+  right: 0.8rem;
+  bottom: 0.28rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.86);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms ease;
 }
 
 main {
@@ -2170,10 +2219,15 @@ main {
   .site-nav__menu {
     position: static;
     margin-top: 0.4rem;
+    display: none;
     opacity: 1;
     transform: none;
     pointer-events: auto;
     min-width: 100%;
+  }
+
+  .site-nav__menu--open {
+    display: grid;
   }
 
   .site-ambient__orb--cursor {
