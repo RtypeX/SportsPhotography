@@ -181,6 +181,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     height={photo.height}
                     sizes={photoSizes}
                     className="photo-image"
+                    unoptimized={photo.src.startsWith("http")}
                     quality={90}
                   />
                   <span className="photo-overlay">Open full size</span>
@@ -234,6 +235,7 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     className="lightbox__image"
                     sizes="100vw"
                     priority
+                    unoptimized={activePhoto.src.startsWith("http")}
                     quality={95}
                   />
                 </div>

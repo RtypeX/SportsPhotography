@@ -12,6 +12,7 @@ type PortfolioSceneProps = {
 
 export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
   const sceneRef = useRef<HTMLDivElement | null>(null);
+  const usesRemoteImage = photo.src.startsWith("http");
 
   return (
     <div
@@ -74,6 +75,7 @@ export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
             height={photo.height}
             className="portfolio-scene__image"
             priority
+            unoptimized={usesRemoteImage}
             sizes="(max-width: 900px) 100vw, 58vw"
             quality={92}
           />

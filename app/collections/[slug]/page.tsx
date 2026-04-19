@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CollectionSwitcher } from "@/components/collection-switcher";
@@ -61,7 +60,9 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               <a href={collection.instagramUrl} target="_blank" rel="noopener noreferrer">
                 DM Dustin
               </a>
-              <Link href="/#booking">Book coverage</Link>
+              <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
+                Email Dustin
+              </a>
             </div>
             <GalleryActions
               downloadHref={`/api/collections/${collection.slug}/download`}
@@ -93,7 +94,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               {collection.turnaround} {siteConfig.bookingResponseWindow}
             </p>
             <div className="contact-band__actions">
-              <Link href="/#booking">Send booking request</Link>
               <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
                 Email Dustin
               </a>

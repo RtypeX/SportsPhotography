@@ -38,6 +38,7 @@ type PhotoOverride = {
 };
 
 const fileCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+const fallbackSupabaseUrl = "https://zsbjbmhdkqkkoniucfzg.supabase.co";
 const supabaseStorageBucket = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ?? "gallery";
 const localPhotoManifest = photoManifest as Record<
   string,
@@ -52,7 +53,7 @@ const localPhotoManifest = photoManifest as Record<
 >;
 
 function getSupabaseStorageBaseUrl() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? fallbackSupabaseUrl;
 
   if (!supabaseUrl) {
     return null;

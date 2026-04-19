@@ -26,6 +26,7 @@ export default async function Home() {
   const featuredPhotos = await getFeaturedPhotos(primaryCollection.slug);
   const collectionPhotos = await getCollectionPhotos(primaryCollection.slug);
   const leadPhoto = featuredPhotos[0] ?? collectionPhotos[0];
+  const coverImage = getCoverImage(primaryCollection.slug);
   const photoCount = new Intl.NumberFormat("en-US").format(collectionPhotos.length);
   const featuredCount = new Intl.NumberFormat("en-US").format(featuredPhotos.length);
   const reelItems = [
@@ -43,10 +44,11 @@ export default async function Home() {
       <main id="main-content">
         <section className="collection-cover collection-cover--intro">
           <Image
-            src={getCoverImage(primaryCollection.slug)}
+            src={coverImage}
             alt={`${primaryCollection.teamName} competing at ${primaryCollection.eventName}`}
             fill
             priority
+            unoptimized={coverImage.startsWith("http")}
             sizes="(max-width: 1260px) 100vw, 1240px"
             className="collection-cover__image"
           />
