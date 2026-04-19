@@ -28,7 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { SmartPhoto } from "@/components/smart-photo";
+import { reportMobileDebug } from "@/lib/mobile-debug";
 
 type PhotoGridProps = {
   photos: PhotoEntry[];
@@ -77,11 +77,6 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
   );
   const visiblePhotos = collection ? filteredPhotos.slice(0, visibleCount) : filteredPhotos;
   const hasMorePhotos = visiblePhotos.length < filteredPhotos.length;
-  const photoSizes = collection
-    ? "(max-width: 720px) calc(100vw - 2rem), (max-width: 1200px) calc(50vw - 1.4rem), 18rem"
-    : compact
-      ? "(max-width: 720px) calc(100vw - 2rem), (max-width: 980px) calc(50vw - 1.2rem), 16rem"
-      : "(max-width: 980px) calc(100vw - 2rem), 32rem";
   const activeIndex = activePhotoId
     ? filteredPhotos.findIndex((photo) => photo.id === activePhotoId)
     : -1;
@@ -226,11 +221,9 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                 aria-label={`Open ${photo.title}`}
               >
                 <div className={`photo-frame photo-frame--${photo.orientation ?? "landscape"}`}>
-                  <SmartPhoto
-                    src={photo.previewSrc}
-                    srcSet={photo.previewSrcSet}
-                    sizes={photoSizes}
-                    originalSrc={photo.src}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.src}
                     alt={photo.alt}
                     width={photo.width}
                     height={photo.height}
@@ -238,15 +231,15 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     loading={index < 4 ? "eager" : "lazy"}
                     fetchPriority={index < 4 ? "high" : "low"}
                     decoding="async"
-                    debugEvent="gallery-image-error"
-                    debugDetails={{
-                      photoId: photo.id,
-                      collectionSlug: photo.collectionSlug,
-                      src: photo.src,
-                      previewSrc: photo.previewSrc,
-                      title: photo.title,
-                      index,
-                    }}
+                    onError={() =>
+                      reportMobileDebug("gallery-image-error", {
+                        photoId: photo.id,
+                        collectionSlug: photo.collectionSlug,
+                        src: photo.src,
+                        title: photo.title,
+                        index,
+                      })
+                    }
                   />
                   <span className="photo-overlay">Open full size</span>
                 </div>
@@ -304,11 +297,9 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                 </Button>
 
                 <div className="lightbox__media">
-                  <SmartPhoto
-                    src={activePhoto.viewerSrc}
-                    srcSet={activePhoto.viewerSrcSet}
-                    sizes="100vw"
-                    originalSrc={activePhoto.src}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={activePhoto.src}
                     alt={activePhoto.alt}
                     width={activePhoto.width}
                     height={activePhoto.height}
@@ -316,14 +307,14 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    debugEvent="lightbox-image-error"
-                    debugDetails={{
-                      photoId: activePhoto.id,
-                      collectionSlug: activePhoto.collectionSlug,
-                      src: activePhoto.src,
-                      viewerSrc: activePhoto.viewerSrc,
-                      title: activePhoto.title,
-                    }}
+                    onError={() =>
+                      reportMobileDebug("lightbox-image-error", {
+                        photoId: activePhoto.id,
+                        collectionSlug: activePhoto.collectionSlug,
+                        src: activePhoto.src,
+                        title: activePhoto.title,
+                      })
+                    }
                   />
                 </div>
 
