@@ -206,7 +206,14 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
             as="article"
             className="photo-card"
           >
-            <div style={{ "--card-index": index } as CSSProperties}>
+            <div
+              style={
+                {
+                  "--card-index": index,
+                  "--photo-aspect-ratio": `${photo.width} / ${photo.height}`,
+                } as CSSProperties
+              }
+            >
               <button
                 type="button"
                 className="photo-button"
