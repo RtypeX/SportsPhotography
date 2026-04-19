@@ -5,6 +5,7 @@ import {
   collectionDefinitions,
   defaultCollectionSlug,
   getCollectionDefinition,
+  siteConfig,
 } from "@/lib/site-data";
 
 type CollectionSwitcherProps = {
@@ -63,6 +64,14 @@ export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
           </Link>
         ))}
       </div>
+
+      <p className="gallery-warning" role="note">
+        Photos not loading?{" "}
+        <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography gallery issue`}>
+          Contact Dustin
+        </a>{" "}
+        (this is probably because you are on mobile)
+      </p>
     </section>
   );
 }

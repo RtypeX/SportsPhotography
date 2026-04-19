@@ -1338,6 +1338,19 @@ main {
   cursor: pointer;
 }
 
+.gallery-warning {
+  margin-top: 1rem;
+  color: rgba(255, 186, 120, 0.92);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.gallery-warning a {
+  color: #ffd2a0;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
 .photo-copy {
   display: flex;
   align-items: flex-start;
@@ -2225,23 +2238,42 @@ main {
 
   .site-header {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    gap: 0.8rem;
   }
 
   .site-nav {
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0.55rem;
     width: 100%;
   }
 
   .brand-mark,
   .site-nav__dropdown-shell {
-    text-align: center;
+    width: 100%;
+    text-align: left;
   }
 
   .site-nav__dropdown-shell {
-    display: flex;
-    justify-content: center;
+    display: block;
+  }
+
+  .site-nav__dropdown,
+  .site-nav__trigger,
+  .site-nav > a {
+    width: 100%;
+  }
+
+  .site-nav__trigger {
+    justify-content: space-between;
+  }
+
+  .site-nav > a {
+    display: block;
+    text-align: left;
   }
 
   .site-nav__menu {
@@ -2295,21 +2327,43 @@ main {
   .gallery-hero,
   .hero {
     padding: 1rem;
+    text-align: left;
+  }
+
+  .collection-cover__content,
+  .hero-intro-block,
+  .section-heading {
+    max-width: none;
+    text-align: left;
+  }
+
+  .collection-cover__content {
+    padding-right: 0;
   }
 
   .hero-actions,
+  .gallery-actions,
   .contact-band__actions,
   .lightbox__actions {
     width: 100%;
   }
 
   .hero-actions a,
+  .gallery-actions__primary,
+  .gallery-actions button,
+  .gallery-actions__button,
+  .gallery-actions__status,
   .contact-band__actions a,
   .gallery-preview__panel a,
   .lightbox__actions button,
   .lightbox__actions a,
   .lightbox__close {
     width: 100%;
+  }
+
+  .gallery-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .portfolio-scene {
@@ -2338,6 +2392,26 @@ main {
 
   .reel-marquee__item {
     font-size: 0.72rem;
+  }
+
+  .showcase-card {
+    min-height: auto;
+    align-items: flex-start;
+  }
+
+  .showcase-card h3,
+  .showcase-card p,
+  .gallery-warning {
+    max-width: none;
+    text-align: left;
+  }
+
+  .photo-card {
+    gap: 0.65rem;
+  }
+
+  .photo-grid__more-button {
+    width: 100%;
   }
 
   .photo-grid--collection,

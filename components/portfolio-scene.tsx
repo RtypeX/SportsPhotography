@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, type CSSProperties } from "react";
 
 import type { PhotoEntry } from "@/lib/site-content";
+import { reportMobileDebug } from "@/lib/mobile-debug";
 
 type PortfolioSceneProps = {
   photo: PhotoEntry;
@@ -80,6 +81,14 @@ export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
+                onError={() =>
+                  reportMobileDebug("portfolio-scene-image-error", {
+                    photoId: photo.id,
+                    collectionSlug: photo.collectionSlug,
+                    src: photo.src,
+                    title: photo.title,
+                  })
+                }
               />
             </>
           ) : (

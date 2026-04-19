@@ -5,6 +5,7 @@
   "scripts": {
     "prepare:galleries": "node scripts/prepare-gallery-assets.mjs",
     "upload:galleries:supabase": "node scripts/upload-gallery-to-supabase.mjs",
+    "debug:photos": "node scripts/check-supabase-gallery-assets.mjs",
     "dev": "next dev --webpack",
     "dev:turbopack": "next dev",
     "build": "next build",

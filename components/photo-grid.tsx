@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { reportMobileDebug } from "@/lib/mobile-debug";
 
 type PhotoGridProps = {
   photos: PhotoEntry[];
@@ -44,8 +45,8 @@ const filterOptions: Array<{ value: PhotoFilter; label: string }> = [
   { value: "portrait", label: "Portraits" },
   { value: "landscape", label: "Landscapes" },
 ];
-const initialCollectionBatch = 16;
-const collectionBatchSize = 12;
+const initialCollectionBatch = 8;
+const collectionBatchSize = 8;
 
 function matchesFilter(photo: PhotoEntry, filter: PhotoFilter) {
   if (filter === "featured") {
@@ -223,6 +224,15 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     loading={index < 4 ? "eager" : "lazy"}
                     fetchPriority={index < 4 ? "high" : "low"}
                     decoding="async"
+                    onError={() =>
+                      reportMobileDebug("gallery-image-error", {
+                        photoId: photo.id,
+                        collectionSlug: photo.collectionSlug,
+                        src: photo.src,
+                        title: photo.title,
+                        index,
+                      })
+                    }
                   />
                   <span className="photo-overlay">Open full size</span>
                 </div>
@@ -290,6 +300,14 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
+                    onError={() =>
+                      reportMobileDebug("lightbox-image-error", {
+                        photoId: activePhoto.id,
+                        collectionSlug: activePhoto.collectionSlug,
+                        src: activePhoto.src,
+                        title: activePhoto.title,
+                      })
+                    }
                   />
                 </div>
 

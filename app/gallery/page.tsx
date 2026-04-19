@@ -25,10 +25,8 @@ export default async function GalleryPage() {
         <ScrollReveal delay={60}>
           <section className="gallery-hero section-panel">
             <p className="section-label">{collection.teamName}</p>
-            <h1>{photoCount} real tournament photos, all viewable in popups and downloadable at full size.</h1>
-            <p className="gallery-intro">
-              Browse the full event archive, open any image in a popup, and download the original-size files whenever you need them.
-            </p>
+            <h1>{photoCount} event photos from {collection.teamName}, ready for full-size viewing and clean sharing.</h1>
+            <p className="gallery-intro">{collection.intro}</p>
             <div className="hero-actions">
               <a href={collection.instagramUrl} target="_blank" rel="noopener noreferrer">
                 DM Dustin
@@ -38,7 +36,6 @@ export default async function GalleryPage() {
               </a>
             </div>
             <GalleryActions
-              downloadHref={`/api/collections/${collection.slug}/download`}
               shareTitle={collection.collectionName}
               shareText={`${collection.teamName} at ${collection.eventName}`}
             />
@@ -46,7 +43,7 @@ export default async function GalleryPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={120}>
-          <ReelMarquee items={[collection.eventName, collection.teamName, `${photoCount} Photos`, "Popup Viewer", "Download Ready"]} />
+          <ReelMarquee items={[collection.teamName, collection.eventName, `${photoCount} Photos`, "Full Size", "Download Ready"]} />
         </ScrollReveal>
 
         <ScrollReveal delay={180}>
@@ -61,8 +58,8 @@ export default async function GalleryPage() {
 
         <ScrollReveal delay={260}>
           <section className="contact-band section-panel">
-            <p className="section-label">Need your own gallery?</p>
-            <h2>{collection.startingPrice} coverage built for teams that want fast delivery and clean sharing.</h2>
+            <p className="section-label">Coverage</p>
+            <h2>{collection.startingPrice} coverage with galleries that stay easy to browse on phones.</h2>
             <p>
               {collection.turnaround} {siteConfig.bookingResponseWindow}
             </p>
