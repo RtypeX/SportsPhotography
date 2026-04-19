@@ -39,6 +39,10 @@ function readMobileDebugFlag() {
   return window.localStorage.getItem("mobileDebug") === "1";
 }
 
+export function isMobileDebugEnabled() {
+  return readMobileDebugFlag();
+}
+
 function getNetworkInformation() {
   if (typeof navigator === "undefined") {
     return {
@@ -55,6 +59,10 @@ function getNetworkInformation() {
     effectiveConnectionType: connection?.effectiveType ?? null,
     saveData: connection?.saveData ?? null,
   };
+}
+
+export function getMobileDebugNetworkInformation() {
+  return getNetworkInformation();
 }
 
 export function reportMobileDebug(event: string, details?: Record<string, unknown>) {

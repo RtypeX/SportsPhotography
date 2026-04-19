@@ -1360,6 +1360,58 @@ main {
   text-underline-offset: 0.16em;
 }
 
+.mobile-debug-badge {
+  position: fixed;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 70;
+  max-width: min(24rem, calc(100vw - 1rem));
+  margin-inline: auto;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(255, 210, 160, 0.45);
+  background: rgba(7, 7, 7, 0.92);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  color: #f7f0e4;
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-debug-badge__title {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ffd2a0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mobile-debug-badge__grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.18rem 0.6rem;
+}
+
+.mobile-debug-badge__grid span:nth-child(odd) {
+  color: rgba(255, 210, 160, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.67rem;
+}
+
+.mobile-debug-badge__grid span:nth-child(even) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mobile-debug-badge__hint {
+  margin-top: 0.55rem;
+  color: rgba(247, 240, 228, 0.72);
+  font-size: 0.68rem;
+}
+
 .photo-copy {
   display: flex;
   align-items: flex-start;

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 
+import { MobileDebugBadge } from "@/components/mobile-debug-badge";
 import { SiteMotion } from "@/components/site-motion";
 import { siteConfig } from "@/lib/site-data";
 
@@ -55,6 +56,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <SiteMotion />
+        <MobileDebugBadge />
         {children}
       </body>
     </html>
