@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronLeftIcon,
@@ -11,8 +10,10 @@ import {
 } from "lucide-react";
 import {
   type CSSProperties,
+  useCallback,
   useDeferredValue,
   useEffect,
+  useRef,
   useState,
   useTransition,
 } from "react";
@@ -43,6 +44,8 @@ const filterOptions: Array<{ value: PhotoFilter; label: string }> = [
   { value: "portrait", label: "Portraits" },
   { value: "landscape", label: "Landscapes" },
 ];
+const initialCollectionBatch = 16;
+const collectionBatchSize = 12;
 
 function matchesFilter(photo: PhotoEntry, filter: PhotoFilter) {
   if (filter === "featured") {
@@ -64,37 +67,64 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
   const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<PhotoFilter>("all");
   const [isFilterPending, startFilterTransition] = useTransition();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const canFilter = collection && photos.length > 12;
   const deferredFilter = useDeferredValue(activeFilter);
-  const visiblePhotos = canFilter ? photos.filter((photo) => matchesFilter(photo, deferredFilter)) : photos;
+  const filteredPhotos = canFilter ? photos.filter((photo) => matchesFilter(photo, deferredFilter)) : photos;
+  const [visibleCount, setVisibleCount] = useState(() =>
+    collection ? Math.min(initialCollectionBatch, photos.length) : photos.length,
+  );
+  const visiblePhotos = collection ? filteredPhotos.slice(0, visibleCount) : filteredPhotos;
+  const hasMorePhotos = visiblePhotos.length < filteredPhotos.length;
   const activeIndex = activePhotoId
-    ? visiblePhotos.findIndex((photo) => photo.id === activePhotoId)
+    ? filteredPhotos.findIndex((photo) => photo.id === activePhotoId)
     : -1;
-  const activePhoto = activeIndex === -1 ? null : visiblePhotos[activeIndex];
-  const photoSizes = collection
-    ? "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 25vw"
-    : compact
-      ? "(max-width: 720px) 100vw, (max-width: 980px) 50vw, 33vw"
-      : "(max-width: 980px) 100vw, 50vw";
-  const closeLightbox = () => {
+  const activePhoto = activeIndex === -1 ? null : filteredPhotos[activeIndex];
+  const closeLightbox = useCallback(() => {
     setActivePhotoId(null);
-  };
-  const openPreviousPhoto = () => {
-    if (visiblePhotos.length === 0) {
+  }, []);
+  const openPreviousPhoto = useCallback(() => {
+    if (filteredPhotos.length === 0) {
       return;
     }
 
-    const nextIndex = (activeIndex - 1 + visiblePhotos.length) % visiblePhotos.length;
-    setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
-  };
-  const openNextPhoto = () => {
-    if (visiblePhotos.length === 0) {
+    const nextIndex = (activeIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+    setActivePhotoId(filteredPhotos[nextIndex]?.id ?? null);
+  }, [activeIndex, filteredPhotos]);
+  const openNextPhoto = useCallback(() => {
+    if (filteredPhotos.length === 0) {
       return;
     }
 
-    const nextIndex = (activeIndex + 1) % visiblePhotos.length;
-    setActivePhotoId(visiblePhotos[nextIndex]?.id ?? null);
-  };
+    const nextIndex = (activeIndex + 1) % filteredPhotos.length;
+    setActivePhotoId(filteredPhotos[nextIndex]?.id ?? null);
+  }, [activeIndex, filteredPhotos]);
+  const loadMorePhotos = useCallback(() => {
+    setVisibleCount((currentCount) => Math.min(currentCount + collectionBatchSize, filteredPhotos.length));
+  }, [filteredPhotos.length]);
+
+  useEffect(() => {
+    if (!collection || !hasMorePhotos || !loadMoreRef.current) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          loadMorePhotos();
+        }
+      },
+      {
+        rootMargin: "900px 0px",
+      },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [collection, hasMorePhotos, loadMorePhotos]);
 
   useEffect(() => {
     if (activePhoto === null) {
@@ -120,15 +150,15 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeIndex, activePhoto, visiblePhotos]);
+  }, [activeIndex, activePhoto, closeLightbox, openNextPhoto, openPreviousPhoto]);
 
   return (
     <>
       {canFilter ? (
         <div className="filter-bar" aria-label="Gallery filters">
           <span className="filter-bar__summary">
-            {new Intl.NumberFormat("en-US").format(visiblePhotos.length)} of{" "}
-            {new Intl.NumberFormat("en-US").format(photos.length)} frames
+            {new Intl.NumberFormat("en-US").format(visiblePhotos.length)} loaded of{" "}
+            {new Intl.NumberFormat("en-US").format(filteredPhotos.length)} frames
           </span>
           {filterOptions.map((option) => (
             <button
@@ -144,6 +174,15 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                     setActivePhotoId(null);
                   }
 
+                  const nextFilteredPhotos = canFilter
+                    ? photos.filter((photo) => matchesFilter(photo, option.value))
+                    : photos;
+
+                  setVisibleCount(
+                    collection
+                      ? Math.min(initialCollectionBatch, nextFilteredPhotos.length)
+                      : nextFilteredPhotos.length,
+                  );
                   setActiveFilter(option.value);
                 })
               }
@@ -174,15 +213,16 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                 aria-label={`Open ${photo.title}`}
               >
                 <div className={`photo-frame photo-frame--${photo.orientation ?? "landscape"}`}>
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={photo.src}
                     alt={photo.alt}
                     width={photo.width}
                     height={photo.height}
-                    sizes={photoSizes}
                     className="photo-image"
-                    unoptimized={photo.src.startsWith("http")}
-                    quality={90}
+                    loading={index < 4 ? "eager" : "lazy"}
+                    fetchPriority={index < 4 ? "high" : "low"}
+                    decoding="async"
                   />
                   <span className="photo-overlay">Open full size</span>
                 </div>
@@ -198,6 +238,19 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
           </ScrollReveal>
         ) : null}
       </div>
+
+      {collection && hasMorePhotos ? (
+        <div className="photo-grid__more">
+          <div ref={loadMoreRef} className="photo-grid__sentinel" aria-hidden="true" />
+          <button
+            type="button"
+            className="photo-grid__more-button"
+            onClick={loadMorePhotos}
+          >
+            Load more frames
+          </button>
+        </div>
+      ) : null}
 
       <Dialog open={activePhoto !== null} onOpenChange={(open) => !open && setActivePhotoId(null)}>
         {activePhoto ? (
@@ -227,16 +280,16 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                 </Button>
 
                 <div className="lightbox__media">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={activePhoto.src}
                     alt={activePhoto.alt}
                     width={activePhoto.width}
                     height={activePhoto.height}
                     className="lightbox__image"
-                    sizes="100vw"
-                    priority
-                    unoptimized={activePhoto.src.startsWith("http")}
-                    quality={95}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                   />
                 </div>
 

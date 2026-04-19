@@ -68,17 +68,32 @@ export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
         </div>
 
         <div className="portfolio-scene__media">
-          <Image
-            src={photo.src}
-            alt={photo.alt}
-            width={photo.width}
-            height={photo.height}
-            className="portfolio-scene__image"
-            priority
-            unoptimized={usesRemoteImage}
-            sizes="(max-width: 900px) 100vw, 58vw"
-            quality={92}
-          />
+          {usesRemoteImage ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.src}
+                alt={photo.alt}
+                width={photo.width}
+                height={photo.height}
+                className="portfolio-scene__image"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </>
+          ) : (
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              width={photo.width}
+              height={photo.height}
+              className="portfolio-scene__image"
+              priority
+              sizes="(max-width: 900px) 100vw, 58vw"
+              quality={92}
+            />
+          )}
           <div className="portfolio-scene__media-fade" aria-hidden="true" />
           <div className="portfolio-scene__footer">
             <div>

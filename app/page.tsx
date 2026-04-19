@@ -27,6 +27,7 @@ export default async function Home() {
   const collectionPhotos = await getCollectionPhotos(primaryCollection.slug);
   const leadPhoto = featuredPhotos[0] ?? collectionPhotos[0];
   const coverImage = getCoverImage(primaryCollection.slug);
+  const coverImageIsRemote = coverImage.startsWith("http");
   const photoCount = new Intl.NumberFormat("en-US").format(collectionPhotos.length);
   const featuredCount = new Intl.NumberFormat("en-US").format(featuredPhotos.length);
   const reelItems = [
@@ -43,15 +44,28 @@ export default async function Home() {
       <SiteHeader />
       <main id="main-content">
         <section className="collection-cover collection-cover--intro">
-          <Image
-            src={coverImage}
-            alt={`${primaryCollection.teamName} competing at ${primaryCollection.eventName}`}
-            fill
-            priority
-            unoptimized={coverImage.startsWith("http")}
-            sizes="(max-width: 1260px) 100vw, 1240px"
-            className="collection-cover__image"
-          />
+          {coverImageIsRemote ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverImage}
+                alt={`${primaryCollection.teamName} competing at ${primaryCollection.eventName}`}
+                className="collection-cover__image"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </>
+          ) : (
+            <Image
+              src={coverImage}
+              alt={`${primaryCollection.teamName} competing at ${primaryCollection.eventName}`}
+              fill
+              priority
+              sizes="(max-width: 1260px) 100vw, 1240px"
+              className="collection-cover__image"
+            />
+          )}
           <div className="collection-cover__shade" aria-hidden="true" />
           <div className="collection-cover__content">
             <p className="section-label">{primaryCollection.teamName}</p>
