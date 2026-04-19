@@ -1438,6 +1438,10 @@ main {
   text-align: center;
 }
 
+.photo-grid--collection .gallery-cta {
+  grid-column: 1 / -1;
+}
+
 .gallery-cta a {
   color: var(--text);
   font-weight: 700;
@@ -2551,9 +2555,14 @@ main {
     font-size: clamp(2.3rem, 11vw, 3.45rem);
   }
 
-  .photo-grid,
-  .photo-grid--collection {
+  .photo-grid {
     gap: 0.8rem;
+  }
+
+  .photo-grid--collection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    align-items: start;
   }
 
   .photo-card {
