@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useRef, type CSSProperties } from "react";
 
+import { SmartPhoto } from "@/components/smart-photo";
 import type { PhotoEntry } from "@/lib/site-content";
-import { reportMobileDebug } from "@/lib/mobile-debug";
 
 type PortfolioSceneProps = {
   photo: PhotoEntry;
@@ -70,27 +70,27 @@ export function PortfolioScene({ photo, titleOverride }: PortfolioSceneProps) {
 
         <div className="portfolio-scene__media">
           {usesRemoteImage ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.src}
-                alt={photo.alt}
-                width={photo.width}
-                height={photo.height}
-                className="portfolio-scene__image"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                onError={() =>
-                  reportMobileDebug("portfolio-scene-image-error", {
-                    photoId: photo.id,
-                    collectionSlug: photo.collectionSlug,
-                    src: photo.src,
-                    title: photo.title,
-                  })
-                }
-              />
-            </>
+            <SmartPhoto
+              src={photo.viewerSrc}
+              srcSet={photo.viewerSrcSet}
+              sizes="(max-width: 720px) calc(100vw - 3rem), (max-width: 1200px) calc(100vw - 4rem), 40rem"
+              originalSrc={photo.src}
+              alt={photo.alt}
+              width={photo.width}
+              height={photo.height}
+              className="portfolio-scene__image"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              debugEvent="portfolio-scene-image-error"
+              debugDetails={{
+                photoId: photo.id,
+                collectionSlug: photo.collectionSlug,
+                src: photo.src,
+                viewerSrc: photo.viewerSrc,
+                title: photo.title,
+              }}
+            />
           ) : (
             <Image
               src={photo.src}
