@@ -38,6 +38,7 @@ type PhotoOverride = {
 };
 
 const fileCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+const supabaseStorageBucket = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ?? "gallery";
 const localPhotoManifest = photoManifest as Record<
   string,
   Array<{
@@ -50,8 +51,24 @@ const localPhotoManifest = photoManifest as Record<
   }>
 >;
 
+function getSupabaseStorageBaseUrl() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${supabaseStorageBucket}`;
+}
+
 export function getPhotoSrc(collectionSlug: string, filename: string) {
-  return `/collections/${collectionSlug}/${encodeURIComponent(filename)}`;
+  const storageBaseUrl = getSupabaseStorageBaseUrl();
+
+  if (!storageBaseUrl) {
+    return `/collections/${collectionSlug}/${encodeURIComponent(filename)}`;
+  }
+
+  return `${storageBaseUrl}/${collectionSlug}/${encodeURIComponent(filename)}`;
 }
 
 export function getCoverImage(collectionSlug = defaultCollectionSlug) {

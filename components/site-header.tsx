@@ -22,19 +22,7 @@ export function SiteHeader() {
   const activeCollection = getCollectionDefinition(activeCollectionSlug);
   const defaultCollection = getCollectionDefinition(defaultCollectionSlug);
   const isGalleryRoute = pathname === "/gallery" || pathname.startsWith("/collections/");
-  const primaryNavItems = isHome
-    ? [
-        { label: "Highlights", href: "/#featured", active: false },
-        { label: "Book", href: "/#booking", active: false },
-      ]
-    : [
-        { label: "Home", href: "/", active: false },
-        {
-          label: "Book",
-          href: "/#booking",
-          active: false,
-        },
-      ];
+  const primaryNavItems = isHome ? [] : [{ label: "Home", href: "/", active: false }];
   const galleryItems = [
     {
       label: "Latest Gallery",

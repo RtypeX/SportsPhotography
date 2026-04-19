@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { BookingRequestForm } from "@/components/booking-request-form";
-import { PhotoGrid } from "@/components/photo-grid";
 import { PortfolioScene } from "@/components/portfolio-scene";
 import { ReelMarquee } from "@/components/reel-marquee";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { SiteHeader } from "@/components/site-header";
 import {
-  collectionDefinitions,
   defaultCollectionSlug,
   getCollectionDefinition,
   getCollectionPhotos,
@@ -29,13 +26,8 @@ export default async function Home() {
   const featuredPhotos = await getFeaturedPhotos(primaryCollection.slug);
   const collectionPhotos = await getCollectionPhotos(primaryCollection.slug);
   const leadPhoto = featuredPhotos[0] ?? collectionPhotos[0];
-  const secondaryCollections = collectionDefinitions.filter(
-    (collection) => collection.slug !== primaryCollection.slug,
-  );
   const photoCount = new Intl.NumberFormat("en-US").format(collectionPhotos.length);
   const featuredCount = new Intl.NumberFormat("en-US").format(featuredPhotos.length);
-  const bookingHref = `mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`;
-  const bookingDepositUrl = siteConfig.bookingDepositUrl || undefined;
   const reelItems = [
     primaryCollection.teamName,
     primaryCollection.eventName,
@@ -97,15 +89,12 @@ export default async function Home() {
                 </p>
                 <p className="hero-intro">{primaryCollection.availability}</p>
                 <div className="hero-actions">
-                  <a href={bookingHref}>Book coverage</a>
+                  <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
+                    Email Dustin
+                  </a>
                   <a href={primaryCollection.instagramUrl} target="_blank" rel="noopener noreferrer">
                     View Instagram
                   </a>
-                  {bookingDepositUrl ? (
-                    <a href={bookingDepositUrl} target="_blank" rel="noopener noreferrer">
-                      {siteConfig.bookingDepositLabel}
-                    </a>
-                  ) : null}
                 </div>
 
                 <div className="hero-points">
@@ -164,123 +153,6 @@ export default async function Home() {
                 <h3>Travel coverage</h3>
                 <p>{primaryCollection.availability}</p>
               </div>
-            </div>
-          </section>
-        </ScrollReveal>
-
-        <ScrollReveal delay={240}>
-          <section className="gallery-preview section-panel">
-            <div className="section-heading">
-              <p className="section-label">Collections</p>
-              <h2>Start with the current drop, then jump into the rest of the archive.</h2>
-            </div>
-            <div className="gallery-preview__panel">
-              <div>
-                <p className="photo-meta">Current gallery</p>
-                <p className="hero-caption__title">{primaryCollection.collectionName}</p>
-                <p>
-                  {primaryCollection.teamName} at {primaryCollection.eventName}, optimized for quick
-                  proofing and download-ready delivery.
-                </p>
-              </div>
-              <Link href="/gallery">Open the full gallery</Link>
-            </div>
-            <div className="showcase-grid">
-              <Link href="/gallery" className="showcase-card showcase-card--wide">
-                <div>
-                  <span className="showcase-card__eyebrow">{primaryCollection.eventDate}</span>
-                  <h3>{primaryCollection.teamName}</h3>
-                  <p>{primaryCollection.tagline}</p>
-                </div>
-                <p className="photo-meta">
-                  {primaryCollection.sport} · {photoCount} frames
-                </p>
-              </Link>
-              {secondaryCollections.map((collection) => (
-                <Link
-                  key={collection.slug}
-                  href={`/collections/${collection.slug}`}
-                  className="showcase-card"
-                >
-                  <div>
-                    <span className="showcase-card__eyebrow">{collection.eventDate}</span>
-                    <h3>{collection.teamName}</h3>
-                    <p>{collection.tagline}</p>
-                  </div>
-                  <p className="photo-meta">
-                    {collection.sport} · {collection.eventName}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        </ScrollReveal>
-
-        <ScrollReveal delay={260}>
-          <section className="featured-strip section-panel" id="featured">
-            <ScrollReveal delay={80}>
-              <div className="section-heading">
-                <p className="section-label">Highlights</p>
-                <h2>
-                  Featured tournament frames from {primaryCollection.teamName}, surfaced first for
-                  quick proofing and faster sharing.
-                </h2>
-              </div>
-            </ScrollReveal>
-            <PhotoGrid photos={featuredPhotos.slice(0, 6)} compact collection showGalleryCta={false} />
-          </section>
-        </ScrollReveal>
-
-        <ScrollReveal delay={280}>
-          <section className="booking-overview section-panel">
-            <div className="section-heading">
-              <p className="section-label">Coverage and delivery</p>
-              <h2>Cleaner packages, faster turnaround, and a booking flow that doesn&apos;t live in scattered DMs.</h2>
-            </div>
-            <div className="booking-offer-grid">
-              <article className="booking-offer-card">
-                <p className="photo-meta">Starting at</p>
-                <h3>{primaryCollection.startingPrice}</h3>
-                <p>{primaryCollection.turnaround}</p>
-              </article>
-              <article className="booking-offer-card">
-                <p className="photo-meta">What&apos;s included</p>
-                <div className="booking-offer-list">
-                  {primaryCollection.coverageNotes.map((note) => (
-                    <p key={note}>{note}</p>
-                  ))}
-                </div>
-              </article>
-            </div>
-          </section>
-        </ScrollReveal>
-
-        <ScrollReveal delay={300}>
-          <BookingRequestForm
-            collectionName={primaryCollection.collectionName}
-            collectionSlug={primaryCollection.slug}
-            bookingDepositLabel={siteConfig.bookingDepositLabel}
-            bookingDepositUrl={bookingDepositUrl}
-          />
-        </ScrollReveal>
-
-        <ScrollReveal delay={320}>
-          <section className="contact-band section-panel" id="contact">
-            <p className="section-label">Book coverage</p>
-            <h2>Need tournament coverage, sideline portraits, or a gallery the whole team can use?</h2>
-            <p>
-              {primaryCollection.availability} {siteConfig.bookingResponseWindow}
-            </p>
-            <div className="contact-band__actions">
-              <a href={bookingHref}>Email Dustin</a>
-              <a href={siteConfig.instagramUrl} target="_blank" rel="noopener noreferrer">
-                Message on Instagram
-              </a>
-              {bookingDepositUrl ? (
-                <a href={bookingDepositUrl} target="_blank" rel="noopener noreferrer">
-                  {siteConfig.bookingDepositLabel}
-                </a>
-              ) : null}
             </div>
           </section>
         </ScrollReveal>

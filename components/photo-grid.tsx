@@ -186,13 +186,6 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                   <span className="photo-overlay">Open full size</span>
                 </div>
               </button>
-              <div className="photo-copy">
-                <div>
-                  <p className="photo-meta">{photo.team}</p>
-                  <h3>{photo.title}</h3>
-                </div>
-                <p className="photo-detail">{photo.filename}</p>
-              </div>
             </div>
           </ScrollReveal>
         ))}
@@ -245,42 +238,35 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
                   />
                 </div>
 
-                <div className="lightbox__meta">
-                  <div>
-                    <p className="photo-meta">{activePhoto.team}</p>
-                    <h3>{activePhoto.title}</h3>
-                    <p className="photo-detail">{activePhoto.event}</p>
-                  </div>
-                  <div className="lightbox__actions">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={openPreviousPhoto}
-                    >
-                      <ChevronLeftIcon data-icon="inline-start" />
-                      Previous
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={openNextPhoto}
-                    >
-                      Next
-                      <ChevronRightIcon data-icon="inline-end" />
-                    </Button>
-                    <Button asChild variant="outline">
-                      <a href={activePhoto.src} target="_blank" rel="noopener noreferrer">
-                        <ExternalLinkIcon data-icon="inline-start" />
-                        Open original
-                      </a>
-                    </Button>
-                    <Button asChild>
-                      <a href={activePhoto.src} download>
-                        <DownloadIcon data-icon="inline-start" />
-                        Download
-                      </a>
-                    </Button>
-                  </div>
+                <div className="lightbox__actions">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={openPreviousPhoto}
+                  >
+                    <ChevronLeftIcon data-icon="inline-start" />
+                    Previous
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={openNextPhoto}
+                  >
+                    Next
+                    <ChevronRightIcon data-icon="inline-end" />
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a href={activePhoto.src} target="_blank" rel="noopener noreferrer">
+                      <ExternalLinkIcon data-icon="inline-start" />
+                      Open original
+                    </a>
+                  </Button>
+                  <Button asChild>
+                    <a href={activePhoto.src} download>
+                      <DownloadIcon data-icon="inline-start" />
+                      Download
+                    </a>
+                  </Button>
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -2,16 +2,11 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import { imageSizeFromFile } from "image-size/fromFile";
+import { collectionFolderToSlug } from "./gallery-config.mjs";
 
 const projectRoot = process.cwd();
 const imagesRoot = path.join(projectRoot, "images");
-const publicCollectionsRoot = path.join(projectRoot, "public", "collections");
 const manifestPath = path.join(projectRoot, "lib", "generated", "photo-manifest.json");
-
-const collectionFolderToSlug = {
-  "shook 2026": "shook-2026",
-  "haa'heo 12u": "haaheo-12u",
-};
 
 const fileCollator = new Intl.Collator(undefined, {
   numeric: true,
@@ -48,26 +43,13 @@ async function buildCollectionManifest(sourceFolder) {
   );
 }
 
-async function syncCollectionAssets(sourceFolder, slug) {
-  const sourceDirectory = path.join(imagesRoot, sourceFolder);
-  const targetDirectory = path.join(publicCollectionsRoot, slug);
-
-  await fs.rm(targetDirectory, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
-  await fs.cp(sourceDirectory, targetDirectory, {
-    recursive: true,
-    force: true,
-  });
-}
-
 async function main() {
-  await ensureDirectory(publicCollectionsRoot);
   await ensureDirectory(path.dirname(manifestPath));
 
   const manifest = {};
 
-  for (const [sourceFolder, slug] of Object.entries(collectionFolderToSlug)) {
+  for (const [sourceFolder] of Object.entries(collectionFolderToSlug)) {
     manifest[sourceFolder] = await buildCollectionManifest(sourceFolder);
-    await syncCollectionAssets(sourceFolder, slug);
   }
 
   await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
