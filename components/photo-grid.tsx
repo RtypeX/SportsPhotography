@@ -13,20 +13,13 @@ import {
   useCallback,
   useDeferredValue,
   useEffect,
-  useRef,
   useState,
   useTransition,
 } from "react";
+import { createPortal } from "react-dom";
 
 import type { PhotoEntry } from "@/lib/site-content";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { reportMobileDebug } from "@/lib/mobile-debug";
 
@@ -45,8 +38,6 @@ const filterOptions: Array<{ value: PhotoFilter; label: string }> = [
   { value: "portrait", label: "Portraits" },
   { value: "landscape", label: "Landscapes" },
 ];
-const initialCollectionBatch = 8;
-const collectionBatchSize = 8;
 
 function matchesFilter(photo: PhotoEntry, filter: PhotoFilter) {
   if (filter === "featured") {
@@ -68,15 +59,14 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
   const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<PhotoFilter>("all");
   const [isFilterPending, startFilterTransition] = useTransition();
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const canFilter = collection && photos.length > 12;
   const deferredFilter = useDeferredValue(activeFilter);
   const filteredPhotos = canFilter ? photos.filter((photo) => matchesFilter(photo, deferredFilter)) : photos;
-  const [visibleCount, setVisibleCount] = useState(() =>
-    collection ? Math.min(initialCollectionBatch, photos.length) : photos.length,
-  );
-  const visiblePhotos = collection ? filteredPhotos.slice(0, visibleCount) : filteredPhotos;
-  const hasMorePhotos = visiblePhotos.length < filteredPhotos.length;
+  const visiblePhotos = filteredPhotos;
+  const filterSummary =
+    canFilter && deferredFilter !== "all"
+      ? `Showing ${new Intl.NumberFormat("en-US").format(visiblePhotos.length)} of ${new Intl.NumberFormat("en-US").format(photos.length)} frames`
+      : `${new Intl.NumberFormat("en-US").format(visiblePhotos.length)} frames ready`;
   const activeIndex = activePhotoId
     ? filteredPhotos.findIndex((photo) => photo.id === activePhotoId)
     : -1;
@@ -100,32 +90,16 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
     const nextIndex = (activeIndex + 1) % filteredPhotos.length;
     setActivePhotoId(filteredPhotos[nextIndex]?.id ?? null);
   }, [activeIndex, filteredPhotos]);
-  const loadMorePhotos = useCallback(() => {
-    setVisibleCount((currentCount) => Math.min(currentCount + collectionBatchSize, filteredPhotos.length));
-  }, [filteredPhotos.length]);
-
-  useEffect(() => {
-    if (!collection || !hasMorePhotos || !loadMoreRef.current) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          loadMorePhotos();
-        }
-      },
-      {
-        rootMargin: "900px 0px",
-      },
-    );
-
-    observer.observe(loadMoreRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [collection, hasMorePhotos, loadMorePhotos]);
+  const galleryCta = !compact && showGalleryCta ? (
+    <ScrollReveal
+      delay={220}
+      as="div"
+      className={`gallery-cta${collection ? " gallery-cta--collection" : ""}`}
+    >
+      <p>Need the full archive?</p>
+      <Link href="/gallery">Browse the complete gallery</Link>
+    </ScrollReveal>
+  ) : null;
 
   useEffect(() => {
     if (activePhoto === null) {
@@ -153,47 +127,165 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
     };
   }, [activeIndex, activePhoto, closeLightbox, openNextPhoto, openPreviousPhoto]);
 
+  useEffect(() => {
+    if (activePhoto === null) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+    };
+  }, [activePhoto]);
+
+  const lightbox = (
+    <AnimatePresence>
+      {activePhoto ? (
+        <motion.div
+          className="lightbox"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          onClick={closeLightbox}
+        >
+          <motion.div
+            className="lightbox__backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          />
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activePhoto.id}
+              className="lightbox__panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`lightbox-title-${activePhoto.id}`}
+              aria-describedby={`lightbox-description-${activePhoto.id}`}
+              initial={{ opacity: 0, y: 18, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.985 }}
+              transition={{ duration: 0.24, ease: "easeOut" }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="sr-only">
+                <h2 id={`lightbox-title-${activePhoto.id}`}>{activePhoto.title}</h2>
+                <p id={`lightbox-description-${activePhoto.id}`}>{activePhoto.alt}</p>
+              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="lightbox__close"
+                onClick={closeLightbox}
+                aria-label="Close image preview"
+              >
+                Close
+              </Button>
+
+              <div className="lightbox__media">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={activePhoto.src}
+                  alt={activePhoto.alt}
+                  width={activePhoto.width}
+                  height={activePhoto.height}
+                  className="lightbox__image"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() =>
+                    reportMobileDebug("lightbox-image-error", {
+                      photoId: activePhoto.id,
+                      collectionSlug: activePhoto.collectionSlug,
+                      src: activePhoto.src,
+                      title: activePhoto.title,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="lightbox__actions">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={openPreviousPhoto}
+                >
+                  <ChevronLeftIcon data-icon="inline-start" />
+                  Previous
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={openNextPhoto}
+                >
+                  Next
+                  <ChevronRightIcon data-icon="inline-end" />
+                </Button>
+                <Button asChild variant="outline">
+                  <a href={activePhoto.src} target="_blank" rel="noopener noreferrer">
+                    <ExternalLinkIcon data-icon="inline-start" />
+                    Open original
+                  </a>
+                </Button>
+                <Button asChild>
+                  <a href={activePhoto.src} download>
+                    <DownloadIcon data-icon="inline-start" />
+                    Download
+                  </a>
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+
   return (
     <>
       {canFilter ? (
-        <div className="filter-bar" aria-label="Gallery filters">
-          <span className="filter-bar__summary">
-            {new Intl.NumberFormat("en-US").format(visiblePhotos.length)} loaded of{" "}
-            {new Intl.NumberFormat("en-US").format(filteredPhotos.length)} frames
-          </span>
-          {filterOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={`filter-chip${activeFilter === option.value ? " filter-chip--active" : ""}`}
-              onClick={() =>
-                startFilterTransition(() => {
-                  if (
-                    activePhotoId &&
-                    !photos.some((photo) => photo.id === activePhotoId && matchesFilter(photo, option.value))
-                  ) {
-                    setActivePhotoId(null);
-                  }
+        <ScrollReveal delay={80}>
+          <div className="filter-bar" aria-label="Gallery filters">
+            <span className="filter-bar__summary">{filterSummary}</span>
+            {filterOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`filter-chip${activeFilter === option.value ? " filter-chip--active" : ""}`}
+                onClick={() =>
+                  startFilterTransition(() => {
+                    if (
+                      activePhotoId &&
+                      !photos.some((photo) => photo.id === activePhotoId && matchesFilter(photo, option.value))
+                    ) {
+                      setActivePhotoId(null);
+                    }
 
-                  const nextFilteredPhotos = canFilter
-                    ? photos.filter((photo) => matchesFilter(photo, option.value))
-                    : photos;
-
-                  setVisibleCount(
-                    collection
-                      ? Math.min(initialCollectionBatch, nextFilteredPhotos.length)
-                      : nextFilteredPhotos.length,
-                  );
-                  setActiveFilter(option.value);
-                })
-              }
-              aria-pressed={activeFilter === option.value}
-              disabled={isFilterPending && activeFilter !== option.value}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+                    setActiveFilter(option.value);
+                  })
+                }
+                aria-pressed={activeFilter === option.value}
+                disabled={isFilterPending && activeFilter !== option.value}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </ScrollReveal>
       ) : null}
 
       <div
@@ -247,112 +339,10 @@ export function PhotoGrid({ photos, compact = false, collection = false, showGal
             </div>
           </ScrollReveal>
         ))}
-
-        {!compact && showGalleryCta ? (
-          <ScrollReveal delay={220} as="div" className="gallery-cta">
-            <p>Need the full archive?</p>
-            <Link href="/gallery">Browse the complete gallery</Link>
-          </ScrollReveal>
-        ) : null}
       </div>
 
-      {collection && hasMorePhotos ? (
-        <div className="photo-grid__more">
-          <div ref={loadMoreRef} className="photo-grid__sentinel" aria-hidden="true" />
-          <button
-            type="button"
-            className="photo-grid__more-button"
-            onClick={loadMorePhotos}
-          >
-            Load more frames
-          </button>
-        </div>
-      ) : null}
-
-      <Dialog open={activePhoto !== null} onOpenChange={(open) => !open && setActivePhotoId(null)}>
-        {activePhoto ? (
-          <DialogContent className="lightbox__panel sm:max-w-[1100px]" showCloseButton={false}>
-            <DialogHeader className="sr-only">
-              <DialogTitle>{activePhoto.title}</DialogTitle>
-              <DialogDescription>{activePhoto.alt}</DialogDescription>
-            </DialogHeader>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activePhoto.id}
-                className="lightbox__motion"
-                initial={{ opacity: 0, y: 18, scale: 0.985 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -12, scale: 0.985 }}
-                transition={{ duration: 0.24, ease: "easeOut" }}
-              >
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="lightbox__close"
-                  onClick={closeLightbox}
-                  aria-label="Close image preview"
-                >
-                  Close
-                </Button>
-
-                <div className="lightbox__media">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={activePhoto.src}
-                    alt={activePhoto.alt}
-                    width={activePhoto.width}
-                    height={activePhoto.height}
-                    className="lightbox__image"
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    onError={() =>
-                      reportMobileDebug("lightbox-image-error", {
-                        photoId: activePhoto.id,
-                        collectionSlug: activePhoto.collectionSlug,
-                        src: activePhoto.src,
-                        title: activePhoto.title,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="lightbox__actions">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={openPreviousPhoto}
-                  >
-                    <ChevronLeftIcon data-icon="inline-start" />
-                    Previous
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={openNextPhoto}
-                  >
-                    Next
-                    <ChevronRightIcon data-icon="inline-end" />
-                  </Button>
-                  <Button asChild variant="outline">
-                    <a href={activePhoto.src} target="_blank" rel="noopener noreferrer">
-                      <ExternalLinkIcon data-icon="inline-start" />
-                      Open original
-                    </a>
-                  </Button>
-                  <Button asChild>
-                    <a href={activePhoto.src} download>
-                      <DownloadIcon data-icon="inline-start" />
-                      Download
-                    </a>
-                  </Button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </DialogContent>
-        ) : null}
-      </Dialog>
+      {galleryCta}
+      {typeof document !== "undefined" ? createPortal(lightbox, document.body) : null}
     </>
   );
 }

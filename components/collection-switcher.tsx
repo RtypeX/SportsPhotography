@@ -66,11 +66,11 @@ export function CollectionSwitcher({ currentSlug }: CollectionSwitcherProps) {
       </div>
 
       <p className="gallery-warning" role="note">
-        Photos not loading?{" "}
+        Need help opening a gallery on mobile?{" "}
         <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography gallery issue`}>
           Contact Dustin
-        </a>{" "}
-        (this is probably because you are on mobile)
+        </a>
+        .
       </p>
     </section>
   );

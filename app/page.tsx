@@ -144,7 +144,7 @@ export default async function Home() {
           <ReelMarquee items={reelItems} />
         </ScrollReveal>
 
-        <ScrollReveal delay={220}>
+        <ScrollReveal delay={200}>
           <section className="process-band section-panel">
             <div className="section-heading">
               <p className="section-label">What clients get</p>

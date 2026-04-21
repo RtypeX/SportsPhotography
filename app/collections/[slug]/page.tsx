@@ -84,21 +84,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             <PhotoGrid photos={photos} collection />
           </section>
         </ScrollReveal>
-
-        <ScrollReveal delay={260}>
-          <section className="contact-band section-panel">
-            <p className="section-label">Coverage</p>
-            <h2>{collection.startingPrice} coverage with galleries that stay easy to browse on phones.</h2>
-            <p>
-              {collection.turnaround} {siteConfig.bookingResponseWindow}
-            </p>
-            <div className="contact-band__actions">
-              <a href={`mailto:${siteConfig.emailAddress}?subject=Sports photography coverage inquiry`}>
-                Email Dustin
-              </a>
-            </div>
-          </section>
-        </ScrollReveal>
       </main>
     </div>
   );

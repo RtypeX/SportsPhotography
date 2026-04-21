@@ -3,6 +3,7 @@ import { Fraunces, Manrope } from "next/font/google";
 
 import { MobileDebugBadge } from "@/components/mobile-debug-badge";
 import { SiteMotion } from "@/components/site-motion";
+import { Component as EtheralShadow } from "@/components/ui/etheral-shadow";
 import { siteConfig } from "@/lib/site-data";
 
 import "./globals.css";
@@ -55,6 +56,16 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
+        <div className="app-etheral-background" aria-hidden="true">
+          <EtheralShadow
+            className="app-etheral-effect"
+            color="rgba(182, 182, 182, 1)"
+            animation={{ scale: 92, speed: 74 }}
+            noise={{ opacity: 0.48, scale: 1.08 }}
+            sizing="fill"
+            decorative
+          />
+        </div>
         <SiteMotion />
         <MobileDebugBadge />
         {children}
