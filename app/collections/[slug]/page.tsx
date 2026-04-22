@@ -10,7 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import {
   collectionDefinitions,
   getCollectionDefinition,
-  getCollectionPhotos,
+  getCollectionPhotoPage,
 } from "@/lib/site-content";
 import { buildCollectionMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site-data";
@@ -44,8 +44,8 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     notFound();
   }
 
-  const photos = await getCollectionPhotos(collection.slug);
-  const photoCount = new Intl.NumberFormat("en-US").format(photos.length);
+  const { photos, total } = await getCollectionPhotoPage(collection.slug, 0, 48);
+  const photoCount = new Intl.NumberFormat("en-US").format(total);
 
   return (
     <div className="page-shell">
@@ -81,7 +81,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
         <ScrollReveal delay={220}>
           <section className="gallery-section section-panel">
-            <PhotoGrid photos={photos} collection />
+            <PhotoGrid photos={photos} collection collectionSlug={collection.slug} totalPhotos={total} />
           </section>
         </ScrollReveal>
       </main>

@@ -14,6 +14,8 @@ export type PhotoEntry = {
   id: string;
   filename: string;
   src: string;
+  previewSrc: string;
+  previewSrcSet: string;
   alt: string;
   title: string;
   caption: string;
@@ -74,6 +76,37 @@ export function getPhotoSrc(collectionSlug: string, filename: string) {
   }
 
   return `${storageBaseUrl}/${getStoragePath(collectionSlug, filename)}`;
+}
+
+function getPhotoPreviewBaseUrl() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? fallbackSupabaseUrl;
+
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/render/image/public/${supabaseStorageBucket}`;
+}
+
+export function getPhotoPreviewSources(collectionSlug: string, filename: string) {
+  const previewBaseUrl = getPhotoPreviewBaseUrl();
+  const storagePath = getStoragePath(collectionSlug, filename);
+
+  if (!previewBaseUrl) {
+    const localSrc = `/collections/${collectionSlug}/${encodeURIComponent(filename)}`;
+    return {
+      previewSrc: localSrc,
+      previewSrcSet: `${localSrc} 900w`,
+    };
+  }
+
+  const widths = [480, 720, 900];
+  const buildSizedUrl = (width: number) => `${previewBaseUrl}/${storagePath}?width=${width}&quality=72&format=webp`;
+
+  return {
+    previewSrc: buildSizedUrl(widths[1]),
+    previewSrcSet: widths.map((width) => `${buildSizedUrl(width)} ${width}w`).join(", "),
+  };
 }
 export function getCoverImage(collectionSlug = defaultCollectionSlug) {
   const collection = getCollectionDefinition(collectionSlug);
@@ -148,6 +181,7 @@ export const getCollectionPhotos = cache(async (collectionSlug = defaultCollecti
         id: photo.id,
         filename: photo.filename,
         src: photo.src,
+        ...getPhotoPreviewSources(collection.slug, photo.filename),
         alt: `${collection.teamName} during ${collection.eventName}. ${override?.caption?.trim() || photo.defaultCaption}`,
         title: override?.title?.trim() || photo.defaultTitle,
         caption: override?.caption?.trim() || photo.defaultCaption,
@@ -165,6 +199,25 @@ export const getCollectionPhotos = cache(async (collectionSlug = defaultCollecti
     })
     .sort((left, right) => left.sortOrder - right.sortOrder || fileCollator.compare(left.filename, right.filename));
 });
+
+export async function getCollectionPhotoPage(
+  collectionSlug = defaultCollectionSlug,
+  offset = 0,
+  limit = 48,
+) {
+  const photos = await getCollectionPhotos(collectionSlug);
+  const startIndex = Math.max(0, offset);
+  const boundedLimit = Math.min(Math.max(1, limit), 120);
+  const page = photos.slice(startIndex, startIndex + boundedLimit);
+  const nextOffset = startIndex + page.length;
+
+  return {
+    photos: page,
+    total: photos.length,
+    nextOffset,
+    hasMore: nextOffset < photos.length,
+  };
+}
 
 export const getFeaturedPhotos = cache(async (collectionSlug = defaultCollectionSlug) => {
   const photos = await getCollectionPhotos(collectionSlug);
